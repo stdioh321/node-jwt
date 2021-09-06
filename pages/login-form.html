@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Form</title>
+</head>
+
+<body>
+    <h1>Login</h1>
+    <form id="form-login">
+        <div>
+            <label for="user">Usuário</label>
+            <input type="text" id="user" name="user" placeholder="Usuário" value="luiz" required>
+        </div>
+        <br>
+        <div>
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="Senha" value="123" required>
+        </div>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+    <small style="color: rgba(0,0,0,0.4);">
+        <h4>Default</h4>
+        <div>Usuário: luiz</div>
+        <div>Senha: 123</div>
+    </small>
+    <pre style="word-break: break-all; white-space: pre-wrap;" id="test-login-result"></pre>
+    <br>
+    <h1>Testar Token</h1>
+    <form id="form-test-token">
+        <label for="token">Secret</label> <br>
+        <textarea name="secret" id="secret" rows="3" style="min-width:100%">mysecret</textarea>
+        <br>
+        <label for="token">Token</label><br>
+        <textarea name="token" id="token" rows="3" style="min-width:100%" required></textarea>
+        <br>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <pre id="test-token-result"></pre>
+
+    <script>
+        window.onload = () => {
+            let bt = document.querySelector('form button[type="submit"]');
+            if (bt) bt.focus();
+        }
+
+        document.querySelector("#form-login").onsubmit = testLogin;
+        document.querySelector("#form-test-token").onsubmit = testToken;
+
+        async function testLogin(ev) {
+            ev.preventDefault();
+            let user = ev.target.elements.user.value;
+            let pass = ev.target.elements.password.value;
+            let _data = new URLSearchParams({
+                "user": user,
+                "password": pass
+            });
+
+            console.log(_data);
+            try {
+                result = await (await fetch(`/login`, {
+                    method: "POST",
+                    body: _data
+                })).json()
+                document.querySelector("#test-login-result").innerHTML = JSON.stringify(result, null, 2);
+            } catch (ex) {
+                console.log("Catch");
+                console.log(ex);
+                document.querySelector("#test-login-result").innerHTML = "Error";
+            }
+
+        }
+        async function testToken(ev) {
+            ev.preventDefault();
+            let secret = ev.target.elements.secret.value;
+            let token = ev.target.elements.token.value;
+
+            try {
+                result = await (await fetch(`/test-token?secret=${secret}&token=${token}`)).text()
+                document.querySelector("#test-token-result").innerHTML = result;
+            } catch (ex) {
+                console.log("Catch");
+                console.log(ex);
+                document.querySelector("#test-token-result").innerHTML = "Error";
+            }
+
+        }
+    </script>
+</body>
+
+</html>
