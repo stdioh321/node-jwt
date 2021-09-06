@@ -7,7 +7,9 @@ const app = express();
 // const bodyParser = require('body-parser');
 const path = require('path');
 
-require("dotenv-safe").config();
+require("dotenv-safe").config({
+    path: ".env.example"
+});
 const jwt = require('jsonwebtoken');
 
 
