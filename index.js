@@ -18,6 +18,9 @@ app.use(express.json());
 app.use(express.text());
 
 
+app.use('/node_modules', express.static(__dirname + '/node_modules'));
+
+
 app.get('/', (req, res, next) => {
     // res.json({ message: "Tudo ok por aqui!" });
     res.sendFile(path.join(__dirname + "/pages/login-form.html"));
@@ -45,7 +48,14 @@ app.post('/login', (req, res, next) => {
     res.status(500).json({ message: 'Login inválido!' });
 })
 
-
+app.post("/gen-token", (req, res, next) => {
+    const bd = req.body;
+    const token = jwt.sign({ "payload": bd }, process.env.SECRET, {
+        expiresIn: 300
+    });
+    // console.log(token);
+    res.send(token);
+})
 
 app.get("/test-token", verifyJWT)
 
